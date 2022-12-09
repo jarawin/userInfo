@@ -7,7 +7,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,16 +29,39 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String username;
+  late String username = "";
+  late bool isWaiting = false;
 
   void _loginUser() {
-    //TODO
-    setState(() {});
+    setState(() {
+      isWaiting = true;
+    });
+
+    getUserInfo().then((value) {
+      setState(() {
+        isWaiting = false;
+      });
+
+      setState(() {
+        if (value != null) {
+          username = value;
+        } else {
+          username = "";
+        }
+      });
+    });
   }
 
   String greetText() {
-    //TODO
-    return '';
+    if (isWaiting) {
+      return 'Logging in...';
+    } else {
+      if (username.isNotEmpty) {
+        return 'Hello $username';
+      } else {
+        return 'Login fails';
+      }
+    }
   }
 
   @override
@@ -68,12 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-/*
-Provided Async function getUserInfo
- */
 int index = 0;
-final usernameList = ['Peter','Jacob','Steve',null];
+final usernameList = ['Peter', 'Jacob', 'Steve', null];
 Future<String?> getUserInfo() async {
   index = index % usernameList.length;
-  return Future.delayed(const Duration(seconds: 3),() => usernameList[index++]);
+  return Future.delayed(
+      const Duration(seconds: 3), () => usernameList[index++]);
 }
